@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: lunar
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/space_tours
+    username: lunar
+    password: lunar
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
