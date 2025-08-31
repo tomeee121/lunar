@@ -19,6 +19,9 @@ public class Flight {
     @Column(name = "booked_capacity", nullable = false)
     private BigDecimal bookedCapacity = BigDecimal.ZERO;
 
+    @Column(name = "spaceship_id", nullable = false)
+    private Long spaceshipId;
+
     public Flight() {}
 
     public Long getId() { return id; }
@@ -28,4 +31,11 @@ public class Flight {
     public BigDecimal getBookedCapacity() { return bookedCapacity; }
     public void setBookedCapacity(BigDecimal bookedCapacity) { this.bookedCapacity = bookedCapacity; }
 
+    public Long getSpaceshipId() {
+        return spaceshipId;
+    }
+
+    public void setSpaceshipId(Long spaceshipId) {
+        this.spaceshipId = spaceshipId;
+    }
 }
