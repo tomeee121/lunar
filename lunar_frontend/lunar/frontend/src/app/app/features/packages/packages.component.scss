@@ -1,0 +1,41 @@
+.form {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.result {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(0,0,0,.6);
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.6);
+
+  th, td {
+    padding: 8px 12px;
+    border: 1px solid rgba(255,255,255,.2);
+  }
+
+  th {
+    background: rgba(0,0,0,.7);
+  }
+}
+
+.form {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0 16px;
+}
+
+.hint {
+  color: #ffd;
+  opacity: .9;
+  margin: 4px 0;
+}
+

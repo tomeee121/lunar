@@ -1,1 +1,56 @@
-<p>packages works!</p>
+<section class="packages">
+  <h1>Choose Your Package</h1>
+
+  <form [formGroup]="form" class="form">
+    <mat-form-field appearance="fill">
+      <mat-label>Travel Date</mat-label>
+      <input matInput type="date" formControlName="date">
+      <mat-error *ngIf="f['date'].touched && f['date'].hasError('required')">
+        Please select a date.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Passengers</mat-label>
+      <input matInput type="number" min="1" formControlName="passengers">
+      <mat-error *ngIf="f['passengers'].touched && (f['passengers'].hasError('required') || f['passengers'].hasError('min'))">
+        Passengers must be at least 1.
+      </mat-error>
+    </mat-form-field>
+  </form>
+
+  <div class="buttons">
+    <button mat-raised-button color="accent" (click)="check('armstrong')" [disabled]="form.invalid">Armstrong Explorer</button>
+    <button mat-raised-button color="accent" (click)="check('aldrin')"     [disabled]="form.invalid">Aldrin Oddity</button>
+    <button mat-raised-button color="accent" (click)="check('conrad')"     [disabled]="form.invalid">Conrad Baptism</button>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+  <table class="result" *ngIf="!loading && availabilities.length > 0">
+    <thead>
+    <tr>
+      <th>Spaceship</th>
+      <th>Passengers</th>
+      <th>Flight</th>
+      <th>Hotel</th>
+      <th>Total</th>
+      <th>Per Person</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let a of availabilities">
+      <td>{{ a.spaceshipName }}</td>
+      <td>{{ a.passengers }}</td>
+      <td>{{ a.flightCost | currency:'EUR' }}</td>
+      <td>{{ a.hotelCost  | currency:'EUR' }}</td>
+      <td>{{ a.total      | currency:'EUR' }}</td>
+      <td>{{ a.perPassenger | currency:'EUR' }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="!loading && availabilities.length === 0" class="hint">
+    Choose date & passengers, then pick a package to see availability.
+  </p>
+</section>
