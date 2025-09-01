@@ -1,34 +1,75 @@
-<section>
+<section class="ships">
   <h2>Spaceships</h2>
 
-  <div class="toolbar">
-    <input placeholder="Filter by name…" [(ngModel)]="q" (keyup.enter)="page=0; load()" />
-    <button (click)="page=0; load()">Search</button>
+  <div class="filters">
+    <mat-form-field appearance="fill">
+      <mat-label>Select spaceship</mat-label>
+      <mat-select [(value)]="selectedShipId" (selectionChange)="onSelectShip()">
+        <mat-option [value]="null">— Any —</mat-option>
+        <mat-option *ngFor="let s of allShips" [value]="s.id">{{ s.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="options-pager">
+      <button mat-stroked-button class="tall-btn" (click)="loadOptions(optPage-1)" [disabled]="optPage<=0">‹</button>
+      <span class="opt-chip">{{ optPage + 1 }} / {{ optTotalPages }}</span>
+      <button mat-stroked-button class="tall-btn" (click)="loadOptions(optPage+1)" [disabled]="optPage >= optTotalPages-1">›</button>
+    </div>
+
+    <button mat-raised-button color="accent" class="tall-btn" (click)="page=0; load()">Search</button>
+    <button mat-stroked-button color="primary" class="tall-btn" (click)="clearFilters()">Clear</button>
   </div>
 
   <div *ngIf="loading">Loading…</div>
   <div *ngIf="error" class="error">{{ error }}</div>
 
-  <table *ngIf="data">
-    <thead>
-    <tr>
-      <th (click)="changeSort('name')">Name</th>
-      <th (click)="changeSort('booster')">Booster</th>
-      <th (click)="changeSort('maxCapacity')">Max capacity</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let s of data.content">
-      <td>{{ s.name }}</td>
-      <td>{{ s.booster }}</td>
-      <td>{{ s.maximumCapacity | number }}</td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="card" *ngIf="!loading">
+    <table mat-table [dataSource]="data?.content || []" class="mat-elevation-z2 table" *ngIf="data">
+      <!-- Name -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef (click)="changeSort('name')" class="sortable">
+          Name
+          <mat-icon class="sort-icon" *ngIf="sortBy==='name'">{{ sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+        </th>
+        <td mat-cell *matCellDef="let s">{{ s.name }}</td>
+      </ng-container>
 
-  <div class="pager" *ngIf="data">
-    <button [disabled]="page<=0" (click)="page=page-1; load()">Prev</button>
-    <span>Page {{ data.number + 1 }} / {{ data.totalPages }}</span>
-    <button [disabled]="page>=data.totalPages-1" (click)="page=page+1; load()">Next</button>
+      <!-- Booster -->
+      <ng-container matColumnDef="booster">
+        <th mat-header-cell *matHeaderCellDef (click)="changeSort('booster')" class="sortable">
+          Booster
+          <mat-icon class="sort-icon" *ngIf="sortBy==='booster'">{{ sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+        </th>
+        <td mat-cell *matCellDef="let s">{{ s.booster }}</td>
+      </ng-container>
+
+      <!-- Maximum Capacity -->
+      <ng-container matColumnDef="maximumCapacity">
+        <th mat-header-cell *matHeaderCellDef (click)="changeSort('maxCapacity')" class="sortable">
+          Max capacity
+          <mat-icon class="sort-icon" *ngIf="sortBy==='maxCapacity'">{{ sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+        </th>
+        <td mat-cell *matCellDef="let s">{{ s.maximumCapacity | number }}</td>
+      </ng-container>
+
+      <!-- Fuel -->
+      <ng-container matColumnDef="fuelType">
+        <th mat-header-cell *matHeaderCellDef>Fuel</th>
+        <td mat-cell *matCellDef="let s">{{ s.fuelType }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['name','booster','maximumCapacity','fuelType']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['name','booster','maximumCapacity','fuelType'];"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">No ships found.</td>
+      </tr>
+    </table>
+
+    <div class="pager" *ngIf="data">
+      <button mat-stroked-button (click)="page=page-1; load()" [disabled]="data.number<=0">Prev</button>
+      <span class="page-chip">Page {{ data.number + 1 }} / {{ data.totalPages }}</span>
+      <button mat-stroked-button (click)="page=page+1; load()" [disabled]="data.number >= data.totalPages-1">Next</button>
+    </div>
   </div>
 </section>

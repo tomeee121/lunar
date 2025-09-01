@@ -1,69 +1,71 @@
-.app-container {
-  height: 100vh;
-}
+.app-container { height: 100vh; }
 
-/* SIDENAV */
-.sidenav {
-  width: 220px;
-  background: #0f0f0f;
-  color: #fff;
-
-  a[mat-list-item] {
-    font-size: 1.05rem;
-    font-weight: 500;
-    padding: 12px 20px;
-    color: #fff;
-    &.active,
-    &:hover { background: rgba(255,255,255,0.08); }
-  }
-}
-
-/* TOOLBAR */
 .app-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  padding: 0 20px;
   background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
   color: #fff;
+  padding: 0 20px;
 
   button { margin-right: 16px; color: #fff; }
+  .brand { font-size: 1.5rem; font-weight: 700; letter-spacing: 1px; }
+}
 
-  .brand {
-    font-size: 1.6rem;
-    font-weight: 700;
-    letter-spacing: .5px;
-  }
+/*  SIDENAV */
+mat-sidenav {
+  width: 240px;
+  background: rgba(20, 24, 31, 0.45);
+  color: #e9f1ff;
+  backdrop-filter: blur(4px) saturate(110%);      /* blur navbar */
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+
+/* Angular Material (mdc) - remove default background */
+:host ::ng-deep .mat-drawer-inner-container {
+  background: transparent !important;
+}
+
+/* === Lista linków === */
+mat-nav-list {
+  padding: 6px;
+}
+
+mat-nav-list a {
+  display: block;
+  margin: 4px 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #eef3ff;
+  text-decoration: none;
+  transition: background .2s ease, color .2s ease, transform .08s ease;
+}
+
+mat-nav-list a:hover {
+  background: rgba(255, 255, 255, 0.12);         /* hovered */
+  color: #ffffff;
+}
+
+mat-nav-list a.active {
+  background: rgba(255, 255, 255, 0.18);         /* hovered route */
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/*clicked effect*/
+mat-nav-list a:active {
+  transform: translateY(1px);
 }
 
 .main-content {
-  height: calc(100vh - 64px);
-  position: relative;
+  min-height: calc(100vh - 64px);
   padding: 16px;
 
-  background-image: url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?ixlib=rb-4.0.3&q=80&w=1920');
+  /* picture and shadow in the background */
+  background-image:
+    linear-gradient(rgba(0,0,0,0.20), rgba(0,0,0,0.20)),
+    url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?ixlib=rb-4.0.3&q=80&w=1920');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &::before {
-    //background
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, rgba(0,0,0,.25), rgba(0,0,0,.4));
-    pointer-events: none;
-  }
-
-  //everything else above background
-  > * {
-    position: relative;
-    z-index: 1;
-    color: #fff;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.7);
-  }
+  background-attachment: fixed; /* ładny efekt parallax */
 }

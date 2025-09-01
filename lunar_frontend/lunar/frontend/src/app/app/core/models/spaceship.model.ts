@@ -4,13 +4,13 @@ export interface SpaceshipModel {
   booster: string;
   weight: number;
   maximumCapacity: number;
-  fuelTypeName?: string;
+  fuelType?: string;
 }
 
 export interface Paged<T> {
   content: T[];
+  number: number;
+  size: number;
   totalElements: number;
   totalPages: number;
-  size: number;
-  number: number;
 }
