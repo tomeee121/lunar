@@ -21,3 +21,6 @@ app:
     allowed-origins:
       - http://localhost:4200
       - http://127.0.0.1:4200
+  jwt:
+    secret: "change-me-please-change-me-32bytes-min"
+    ttl-ms: 86400000
