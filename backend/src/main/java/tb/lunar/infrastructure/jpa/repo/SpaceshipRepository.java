@@ -1,8 +1,11 @@
 package tb.lunar.infrastructure.jpa.repo;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import tb.lunar.infrastructure.jpa.entity.Spaceship;
 
 import java.util.List;
@@ -13,6 +16,15 @@ public interface SpaceshipRepository extends JpaRepository<Spaceship, Long> {
      * entity graph to create join instead of querrying N+1 type
      */
     @EntityGraph(attributePaths = "fuelType")
-    @Query("SELECT s FROM Spaceship s")
+    @Query("select s from Spaceship s")
     List<Spaceship> findAllWithFuel();
+
+    @EntityGraph(attributePaths = "fuelType")
+    Page<Spaceship> findByNameIgnoreCase(String name, Pageable pageable);
+
+    @EntityGraph(attributePaths = "fuelType")
+    Page<Spaceship> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    @EntityGraph(attributePaths = "fuelType")
+    Page<Spaceship> findAllBy(Pageable pageable);
 }
