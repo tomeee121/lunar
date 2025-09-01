@@ -2,16 +2,68 @@
   height: 100vh;
 }
 
+/* SIDENAV */
 .sidenav {
   width: 220px;
+  background: #0f0f0f;
+  color: #fff;
+
+  a[mat-list-item] {
+    font-size: 1.05rem;
+    font-weight: 500;
+    padding: 12px 20px;
+    color: #fff;
+    &.active,
+    &:hover { background: rgba(255,255,255,0.08); }
+  }
 }
 
-.mat-toolbar {
+/* TOOLBAR */
+.app-toolbar {
   position: sticky;
   top: 0;
   z-index: 1000;
+  padding: 0 20px;
+  background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+  color: #fff;
+
+  button { margin-right: 16px; color: #fff; }
+
+  .brand {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+  }
 }
 
 .main-content {
+  height: calc(100vh - 64px);
+  position: relative;
   padding: 16px;
+
+  background-image: url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?ixlib=rb-4.0.3&q=80&w=1920');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &::before {
+    //background
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,.25), rgba(0,0,0,.4));
+    pointer-events: none;
+  }
+
+  //everything else above background
+  > * {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  }
 }

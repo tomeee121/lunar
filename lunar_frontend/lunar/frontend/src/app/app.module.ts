@@ -15,6 +15,16 @@ import {MatListModule} from "@angular/material/list";
 import {MatButtonModule} from "@angular/material/button";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
+import {RouterModule, Routes} from "@angular/router";
+import {MatCardModule} from "@angular/material/card";
+
+const routes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'spaceships', component: SpaceshipsComponent },
+  { path: 'packages', component: PackagesComponent },
+  { path: '**', redirectTo: '' }
+];
+
 
 @NgModule({
   declarations: [
@@ -26,7 +36,6 @@ import {HttpClientModule} from "@angular/common/http";
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
     MatSidenavModule,
@@ -37,7 +46,9 @@ import {HttpClientModule} from "@angular/common/http";
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
-    AppRoutingModule
+    RouterModule.forRoot(routes),
+    MatCardModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

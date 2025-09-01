@@ -1,20 +1,35 @@
-<mat-sidenav-container>
-  <mat-sidenav #drawer mode="side">
+<mat-sidenav-container class="app-container">
+  <mat-sidenav #drawer class="sidenav" mode="side" [fixedInViewport]="true">
     <mat-nav-list>
-      <a mat-list-item routerLink="/">Home</a>
-      <a mat-list-item routerLink="/spaceships">Spaceships</a>
-      <a mat-list-item routerLink="/packages">Packages</a>
+      <a mat-list-item
+         routerLink="/"
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{ exact: true }"
+         (click)="drawer.close()">Home</a>
+
+      <a mat-list-item
+         routerLink="/spaceships"
+         routerLinkActive="active"
+         (click)="drawer.close()">Spaceships</a>
+
+      <a mat-list-item
+         routerLink="/packages"
+         routerLinkActive="active"
+         (click)="drawer.close()">Packages</a>
     </mat-nav-list>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button mat-icon-button (click)="drawer.toggle()">
+    <mat-toolbar class="app-toolbar">
+      <button mat-icon-button (click)="drawer.toggle()" aria-label="Toggle menu">
         <mat-icon>menu</mat-icon>
       </button>
-      <span>Lunar travel 🚀</span>
+      <span class="brand">Lunar Travel 🚀</span>
     </mat-toolbar>
 
-    <router-outlet></router-outlet>
+    <main class="main-content">
+      <!-- overlay in css (::before) -->
+      <router-outlet></router-outlet>
+    </main>
   </mat-sidenav-content>
 </mat-sidenav-container>
