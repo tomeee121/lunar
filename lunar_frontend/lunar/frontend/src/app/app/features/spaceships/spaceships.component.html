@@ -1,0 +1,34 @@
+<section>
+  <h2>Spaceships</h2>
+
+  <div class="toolbar">
+    <input placeholder="Filter by name…" [(ngModel)]="q" (keyup.enter)="page=0; load()" />
+    <button (click)="page=0; load()">Search</button>
+  </div>
+
+  <div *ngIf="loading">Loading…</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table *ngIf="data">
+    <thead>
+    <tr>
+      <th (click)="changeSort('name')">Name</th>
+      <th (click)="changeSort('booster')">Booster</th>
+      <th (click)="changeSort('maxCapacity')">Max capacity</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let s of data.content">
+      <td>{{ s.name }}</td>
+      <td>{{ s.booster }}</td>
+      <td>{{ s.maximumCapacity | number }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="pager" *ngIf="data">
+    <button [disabled]="page<=0" (click)="page=page-1; load()">Prev</button>
+    <span>Page {{ data.number + 1 }} / {{ data.totalPages }}</span>
+    <button [disabled]="page>=data.totalPages-1" (click)="page=page+1; load()">Next</button>
+  </div>
+</section>
