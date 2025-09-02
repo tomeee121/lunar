@@ -1,56 +1,59 @@
 <section class="packages">
   <h1>Choose Your Package</h1>
 
-  <form [formGroup]="form" class="form">
+  <form class="filters" [formGroup]="form" (ngSubmit)="search()">
     <mat-form-field appearance="fill">
       <mat-label>Travel Date</mat-label>
-      <input matInput type="date" formControlName="date">
-      <mat-error *ngIf="f['date'].touched && f['date'].hasError('required')">
+      <input matInput type="date" formControlName="date" />
+      <mat-error *ngIf="form.get('date')?.touched && form.get('date')?.hasError('required')">
         Please select a date.
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Passengers</mat-label>
-      <input matInput type="number" min="1" formControlName="passengers">
-      <mat-error *ngIf="f['passengers'].touched && (f['passengers'].hasError('required') || f['passengers'].hasError('min'))">
+      <input matInput type="number" min="1" formControlName="passengers" />
+      <mat-error *ngIf="form.get('passengers')?.touched && (form.get('passengers')?.hasError('required') || form.get('passengers')?.hasError('min'))">
         Passengers must be at least 1.
       </mat-error>
     </mat-form-field>
+
+    <button mat-raised-button color="accent" type="submit">
+      Search
+    </button>
+    <button mat-stroked-button color="primary" type="button" (click)="clear()">
+      Clear
+    </button>
   </form>
 
-  <div class="buttons">
-    <button mat-raised-button color="accent" (click)="check('armstrong')" [disabled]="form.invalid">Armstrong Explorer</button>
-    <button mat-raised-button color="accent" (click)="check('aldrin')"     [disabled]="form.invalid">Aldrin Oddity</button>
-    <button mat-raised-button color="accent" (click)="check('conrad')"     [disabled]="form.invalid">Conrad Baptism</button>
-  </div>
-
   <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+  <div *ngIf="error" class="error">{{ error }}</div>
 
-  <table class="result" *ngIf="!loading && availabilities.length > 0">
-    <thead>
-    <tr>
-      <th>Spaceship</th>
-      <th>Passengers</th>
-      <th>Flight</th>
-      <th>Hotel</th>
-      <th>Total</th>
-      <th>Per Person</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let a of availabilities">
-      <td>{{ a.spaceshipName }}</td>
-      <td>{{ a.passengers }}</td>
-      <td>{{ a.flightCost | currency:'EUR' }}</td>
-      <td>{{ a.hotelCost  | currency:'EUR' }}</td>
-      <td>{{ a.total      | currency:'EUR' }}</td>
-      <td>{{ a.perPassenger | currency:'EUR' }}</td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="cards" *ngIf="!loading">
+    <mat-card class="pkg" *ngFor="let p of packages" [class.disabled]="!form.valid">
+      <img mat-card-image *ngIf="p.imageUrl" [src]="p.imageUrl" [alt]="p.title" />
+      <mat-card-header>
+        <mat-card-title>{{ p.title }}</mat-card-title>
+        <mat-card-subtitle>{{ p.subtitle }}</mat-card-subtitle>
+      </mat-card-header>
 
-  <p *ngIf="!loading && availabilities.length === 0" class="hint">
-    Choose date & passengers, then pick a package to see availability.
-  </p>
+      <mat-card-content *ngIf="p.basePrice">
+        <p><strong>Base price:</strong> {{ p.basePrice | number:'1.0-0' }}</p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button
+          mat-raised-button
+          color="accent"
+          [disabled]="form.invalid"
+          (click)="search()">
+          Check availability
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <div *ngIf="!packages?.length && !loading" class="hint">
+      No packages available.
+    </div>
+  </div>
 </section>

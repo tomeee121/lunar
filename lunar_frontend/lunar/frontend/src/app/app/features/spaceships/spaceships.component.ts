@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpaceshipService } from '../../core/services/spaceship.service';
-import {Paged, SpaceshipModel} from "../../core/models/spaceship.model";
+import { Paged, SpaceshipModel } from '../../core/models/spaceship.model';
 
 const LAST_SHIP_KEY = 'lastSelectedShipId';
 
@@ -25,6 +25,7 @@ export class SpaceshipsComponent implements OnInit {
 
   displayedColumns = ['name','booster','maximumCapacity','fuelType'];
 
+  // paginacja dropdownu
   optPage = 0;
   optSize = 20;
   optTotalPages = 1;
@@ -33,27 +34,23 @@ export class SpaceshipsComponent implements OnInit {
   constructor(private svc: SpaceshipService) {}
 
   ngOnInit(): void {
-    // 1) dropdown list
+    this.loadOptions(0);
+    this.load();
+  }
+
+  loadOptions(page: number) {
+    this.optPage = Math.max(0, page);
     this.svc.dropdownPage(this.optPage, this.optSize, this.optQ).subscribe({
       next: p => {
         this.allShips = p.content ?? [];
         this.optTotalPages = p.totalPages ?? 1;
 
-        // 2) get last selected item
         const saved = localStorage.getItem(LAST_SHIP_KEY);
-        if (saved) {
-          const id = Number(saved);
-          if (this.allShips.some(s => s.id === id)) {
-            this.selectedShipId = id;
-          } else {
-            localStorage.removeItem(LAST_SHIP_KEY);
-          }
+        if (saved && this.allShips.some(s => s.id === +saved)) {
+          this.selectedShipId = +saved;
         }
-
-        // 3) load ships
-        this.load();
       },
-      error: () => { this.allShips = []; this.optTotalPages = 1; this.load(); }
+      error: () => { this.allShips = []; this.optTotalPages = 1; }
     });
   }
 
@@ -61,7 +58,7 @@ export class SpaceshipsComponent implements OnInit {
     this.loading = true; this.error = null;
 
     const id = this.selectedShipId ?? undefined;
-    const query = id ? '' : (this.q?.trim() || '');
+    const query = id ? '' : (this.q.trim());
     const match: 'contains'|'exact' = id ? 'exact' : 'contains';
 
     this.svc.list(query, this.sortBy, this.sortDir, this.page, this.size, id, match)
@@ -78,7 +75,6 @@ export class SpaceshipsComponent implements OnInit {
   }
 
   onSelectShip() {
-    // update storage item chosen
     if (this.selectedShipId != null) {
       localStorage.setItem(LAST_SHIP_KEY, String(this.selectedShipId));
     } else {
@@ -94,14 +90,5 @@ export class SpaceshipsComponent implements OnInit {
     localStorage.removeItem(LAST_SHIP_KEY);
     this.page = 0;
     this.load();
-  }
-
-  loadOptions(page: number) {
-    if (page < 0 || page > this.optTotalPages - 1) return;
-    this.optPage = page;
-    this.svc.dropdownPage(this.optPage, this.optSize, this.optQ).subscribe({
-      next: p => { this.allShips = p.content ?? []; this.optTotalPages = p.totalPages ?? 1; },
-      error: () => { this.allShips = []; this.optTotalPages = 1; }
-    });
   }
 }

@@ -1,38 +1,54 @@
-import {Injectable} from '@angular/core';
-import {ApiService} from './api.service';
-import {Observable} from 'rxjs';
-import {Paged, SpaceshipModel} from '../models/spaceship.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Paged, SpaceshipModel } from '../models/spaceship.model';
+import {environment} from "../../../../environments/environment";
 
-function normalizePage<T>(res: any): Paged<T> {
-  if (Array.isArray(res)) {
-    const content = res as T[];
-    return { content, number: 0, size: content.length, totalElements: content.length, totalPages: 1 };
-  }
-  return res as Paged<T>;
-}
+const API = environment.apiBaseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class SpaceshipService {
-  constructor(private api: ApiService) {}
+  constructor(private http: HttpClient) {}
 
   list(
-    q = '',
-    sortBy: 'name'|'booster'|'maxCapacity'|'weight' = 'name',
-    sortDir: 'asc'|'desc' = 'asc',
-    page = 0,
-    size = 10,
-    id?: number,
-    match: 'contains'|'exact' = 'contains'
+    q: string,
+    sortBy: 'name' | 'booster' | 'maxCapacity' | 'weight',
+    sortDir: 'asc' | 'desc',
+    page: number,
+    size: number,
+    id?: number | null,
+    match: 'contains' | 'exact' = 'contains'
   ): Observable<Paged<SpaceshipModel>> {
-    const params: any = { sortBy, sortDir, page, size };
-    if (id != null) params.id = id; else { params.q = q; params.match = match; }
-    return this.api.get<Paged<SpaceshipModel>>('/api/spaceships', params);
+    let params = new HttpParams()
+      .set('sortBy', sortBy)
+      .set('sortDir', sortDir)
+      .set('page', page)
+      .set('size', size);
+
+    if (id != null) {
+      params = params.set('id', String(id)).set('match', 'exact');
+    } else if (q) {
+      params = params.set('q', q).set('match', match);
+    }
+
+    return this.http.get<Paged<SpaceshipModel>>(`${API}/spaceships`, { params });
   }
 
-  /** get with pager */
-  dropdownPage(page = 0, size = 20, q = ''): Observable<Paged<SpaceshipModel>> {
-    return this.api.get<Paged<SpaceshipModel>>('/api/spaceships', {
-      page, size, sortBy: 'name', sortDir: 'asc', q, match: 'contains'
-    });
+  dropdown(): Observable<SpaceshipModel[]> {
+    return this.http.get<SpaceshipModel[]>(`${API}/spaceships/dropdown`);
+  }
+
+  dropdownPage(page: number, size: number, q?: string): Observable<Paged<SpaceshipModel>> {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sortBy', 'name')
+      .set('sortDir', 'asc');
+
+    if (q && q.trim()) {
+      params = params.set('q', q.trim()).set('match', 'contains');
+    }
+
+    return this.http.get<Paged<SpaceshipModel>>(`${API}/spaceships`, { params });
   }
 }
