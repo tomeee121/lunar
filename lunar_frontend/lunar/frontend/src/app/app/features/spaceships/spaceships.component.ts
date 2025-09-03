@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SpaceshipService } from '../../core/services/spaceship.service';
-import { Paged, SpaceshipModel } from '../../core/models/spaceship.model';
-
-const LAST_SHIP_KEY = 'lastSelectedShipId';
+import { Page } from '../../core/models/page.model';
+import { SpaceshipModel } from '../../core/models/spaceship.model';
 
 @Component({
   selector: 'app-spaceships',
@@ -10,85 +9,66 @@ const LAST_SHIP_KEY = 'lastSelectedShipId';
   styleUrls: ['./spaceships.component.scss']
 })
 export class SpaceshipsComponent implements OnInit {
-  q = '';
-  sortBy: 'name'|'booster'|'maxCapacity'|'weight' = 'name';
-  sortDir: 'asc'|'desc' = 'asc';
+  loading = false;
+  error = '';
+  data?: Page<SpaceshipModel>;
+
   page = 0;
   size = 10;
+  sortBy: 'name'|'booster'|'maxCapacity'|'weight' = 'name';
+  sortDir: 'asc'|'desc' = 'asc';
+  q = '';
 
-  data: Paged<SpaceshipModel> | null = null;
   allShips: SpaceshipModel[] = [];
   selectedShipId: number | null = null;
-
-  loading = false;
-  error: string | null = null;
-
-  displayedColumns = ['name','booster','maximumCapacity','fuelType'];
-
-  // paginacja dropdownu
   optPage = 0;
-  optSize = 20;
   optTotalPages = 1;
-  optQ = '';
 
-  constructor(private svc: SpaceshipService) {}
+  constructor(private spaceshipSvc: SpaceshipService) {}
 
   ngOnInit(): void {
-    this.loadOptions(0);
     this.load();
+    this.loadOptions(0);
   }
 
-  loadOptions(page: number) {
-    this.optPage = Math.max(0, page);
-    this.svc.dropdownPage(this.optPage, this.optSize, this.optQ).subscribe({
-      next: p => {
-        this.allShips = p.content ?? [];
-        this.optTotalPages = p.totalPages ?? 1;
-
-        const saved = localStorage.getItem(LAST_SHIP_KEY);
-        if (saved && this.allShips.some(s => s.id === +saved)) {
-          this.selectedShipId = +saved;
-        }
-      },
-      error: () => { this.allShips = []; this.optTotalPages = 1; }
+  load(page = this.page) {
+    this.loading = true;
+    this.spaceshipSvc.list({
+      page, size: this.size, sortBy: this.sortBy, sortDir: this.sortDir, q: this.q || undefined
+    }).subscribe({
+      next: (res: Page<SpaceshipModel>) => { this.data = res; this.page = res.number; this.loading = false; },
+      error: () => { this.error = 'Load failed'; this.loading = false; }
     });
   }
 
-  load(): void {
-    this.loading = true; this.error = null;
-
-    const id = this.selectedShipId ?? undefined;
-    const query = id ? '' : (this.q.trim());
-    const match: 'contains'|'exact' = id ? 'exact' : 'contains';
-
-    this.svc.list(query, this.sortBy, this.sortDir, this.page, this.size, id, match)
-      .subscribe({
-        next: d => { this.data = d; this.loading = false; },
-        error: e => { this.error = e?.message ?? 'Error'; this.data = null; this.loading = false; }
-      });
-  }
-
-  changeSort(field: 'name'|'booster'|'maxCapacity'|'weight') {
-    this.sortBy = field === this.sortBy ? this.sortBy : field;
-    this.sortDir = field === this.sortBy ? (this.sortDir === 'asc' ? 'desc' : 'asc') : 'asc';
-    this.page = 0; this.load();
-  }
-
-  onSelectShip() {
-    if (this.selectedShipId != null) {
-      localStorage.setItem(LAST_SHIP_KEY, String(this.selectedShipId));
-    } else {
-      localStorage.removeItem(LAST_SHIP_KEY);
-    }
-    this.page = 0;
-    this.load();
+  changeSort(by: 'name'|'booster'|'maxCapacity'|'weight') {
+    if (this.sortBy === by) this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    else { this.sortBy = by; this.sortDir = 'asc'; }
+    this.load(0);
   }
 
   clearFilters() {
     this.q = '';
     this.selectedShipId = null;
-    localStorage.removeItem(LAST_SHIP_KEY);
-    this.page = 0;
-    this.load();
+    this.sortBy = 'name';
+    this.sortDir = 'asc';
+    this.load(0);
+  }
+
+  loadOptions(page: number) {
+    if (page < 0) page = 0;
+    this.optPage = page;
+    this.spaceshipSvc.list({ page, size: 10, sortBy: 'name', sortDir: 'asc' })
+      .subscribe({
+        next: (res: Page<SpaceshipModel>) => {
+          this.allShips = res.content;
+          this.optTotalPages = res.totalPages || 1;
+        },
+        error: () => { this.allShips = []; this.optTotalPages = 1; }
+      });
+  }
+
+  onSelectShip() {
+    this.load(0);
   }
 }

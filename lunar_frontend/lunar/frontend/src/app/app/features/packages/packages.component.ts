@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TravelPackage } from '../../core/models/package.model';
-import { PackageService } from '../../core/services/package.service';
+import { TripQuote } from '../../core/models/trips.model';
+import { TripsService } from '../../core/services/trips.service';
+import { SpaceshipService } from '../../core/services/spaceship.service';
+import { SpaceshipModel } from '../../core/models/spaceship.model';
 
 @Component({
   selector: 'app-packages',
@@ -10,36 +12,99 @@ import { PackageService } from '../../core/services/package.service';
 })
 export class PackagesComponent implements OnInit {
   form: FormGroup;
-
-  packages: TravelPackage[] = [];
   loading = false;
-  error: string | null = null;
+  error = '';
+  quote: TripQuote | null = null;
 
-  constructor(private fb: FormBuilder, private packagesSvc: PackageService) {
+  ships: SpaceshipModel[] = [];
+  rooms: string[] = [];
+
+  constructor(
+    private fb: FormBuilder,
+    private tripsSvc: TripsService,
+    private shipsSvc: SpaceshipService
+  ) {
     this.form = this.fb.group({
-      date: [null, Validators.required],
+      spaceshipId: [null, Validators.required],
+      flightDate: [null, Validators.required],
       passengers: [1, [Validators.required, Validators.min(1)]],
+      payloadKg: [0, [Validators.required, Validators.min(0)]],
+      destination: ['moon', Validators.required],
+      place: ['CYCLER', Validators.required],
+      room: [null, Validators.required],
+      nights: [1, [Validators.required, Validators.min(1)]],
+      rooms: [1, [Validators.required, Validators.min(1)]],
     });
   }
 
   ngOnInit(): void {
-    this.loadPackages();
+    this.shipsSvc.dropdown().subscribe({
+      next: list => this.ships = list,
+      error: () => this.ships = []
+    });
+    this.loadRooms();
+    this.form.get('destination')!.valueChanges.subscribe(() => this.loadRooms());
+    this.form.get('place')!.valueChanges.subscribe(() => this.loadRooms());
   }
 
-  private loadPackages(): void {
-    this.loading = true; this.error = null;
-    this.packagesSvc.list().subscribe({
-      next: (res) => { this.packages = res ?? []; this.loading = false; },
-      error: (e) => { this.error = e?.message ?? 'Failed to load packages'; this.loading = false; }
+  loadRooms(): void {
+    const dest = this.form.get('destination')!.value;
+    const place = this.form.get('place')!.value;
+    if (!dest || !place) { this.rooms = []; this.form.get('room')!.setValue(null); return; }
+
+    this.tripsSvc.rooms(dest, place).subscribe({
+      next: r => {
+        this.rooms = r;
+        if (!r.includes(this.form.get('room')!.value)) this.form.get('room')!.setValue(null);
+      },
+      error: () => { this.rooms = []; }
     });
   }
 
-  search(): void {
-    this.form.markAllAsTouched();
-    if (this.form.invalid) return;
+  search(): void { this.getQuote(); }
+
+  getQuote(): void {
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    this.loading = true; this.error = ''; this.quote = null;
+
+    const v = this.form.value;
+    const flightDate = typeof v.flightDate === 'string'
+      ? v.flightDate
+      : v.flightDate?.toISOString?.().slice(0, 10);
+
+    this.tripsSvc.quote({
+      spaceshipId: v.spaceshipId,
+      flightDate,
+      passengers: v.passengers,
+      payloadKg: v.payloadKg,
+      destination: v.destination,
+      place: v.place,
+      room: v.room,
+      nights: v.nights,
+      rooms: v.rooms
+    }).subscribe({
+      next: q => { this.quote = q; this.loading = false; },
+      error: () => { this.error = 'Quote failed'; this.loading = false; }
+    });
   }
 
   clear(): void {
-    this.form.reset({ date: null, passengers: 1 });
+    this.form.reset({
+      spaceshipId: null,
+      flightDate: null,
+      passengers: 1,
+      payloadKg: 0,
+      destination: 'moon',
+      place: 'CYCLER',
+      room: null,
+      nights: 1,
+      rooms: 1
+    });
+    this.quote = null; this.error = '';
+    this.loadRooms();
+  }
+
+  shipById(id?: number | null) {
+    return this.ships.find(x => x.id === id!) || null;
   }
 }

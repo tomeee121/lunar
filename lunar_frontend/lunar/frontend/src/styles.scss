@@ -1,7 +1,56 @@
-/* You can add global styles to this file, and also import other style files */
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+html, body { height: 100%; }
 
-::ng-deep .mat-mdc-select-panel {
-  background: #111;
-  color: #fff;
+body { background: #06141e; }
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(6,20,30,.65), rgba(6,20,30,.65)),
+    url('/assets/bg/ship.jpg') center/cover no-repeat fixed;
+  will-change: transform;
+}
+
+.mat-drawer-content,
+mat-sidenav-content {
+  background: transparent !important;
+}
+
+.glass {
+  background: rgba(0,0,0,.18);
+  backdrop-filter: blur(1.5px) brightness(1.25);
+  border-radius: 12px;
+}
+
+::ng-deep .mat-datepicker-content,
+::ng-deep .mat-calendar {
+  background: rgba(255,255,255,0.96) !important;
+  color: #111 !important;
+  border-radius: 12px;
+  box-shadow: 0 24px 48px rgba(0,0,0,.35);
+}
+
+::ng-deep .mat-calendar-period-button,
+::ng-deep .mat-calendar-previous-button,
+::ng-deep .mat-calendar-next-button,
+::ng-deep .mat-calendar-table,
+::ng-deep .mat-calendar-body,
+::ng-deep .mat-calendar-body-label {
+  color: #111 !important;
+}
+
+::ng-deep .mat-calendar-body-cell-content { color: #111 !important; }
+::ng-deep .mat-calendar-body-selected {
+  background: #1976d2 !important;
+  color: #fff !important;
+}
+::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: #1976d2 !important;
+}
+
+.cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(2px);
 }

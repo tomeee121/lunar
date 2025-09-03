@@ -1,59 +1,88 @@
 <section class="packages">
-  <h1>Choose Your Package</h1>
+  <h2>Trip quote</h2>
 
   <form class="filters" [formGroup]="form" (ngSubmit)="search()">
     <mat-form-field appearance="fill">
-      <mat-label>Travel Date</mat-label>
-      <input matInput type="date" formControlName="date" />
-      <mat-error *ngIf="form.get('date')?.touched && form.get('date')?.hasError('required')">
-        Please select a date.
-      </mat-error>
+      <mat-label>Spaceship</mat-label>
+      <mat-select formControlName="spaceshipId" panelClass="ships-panel">
+        <mat-select-trigger>
+          {{ shipById(form.value.spaceshipId)?.name || '—' }}
+          <ng-container *ngIf="shipById(form.value.spaceshipId)"> · {{ shipById(form.value.spaceshipId)?.booster }}</ng-container>
+        </mat-select-trigger>
+
+        <mat-option [value]="null">— Any —</mat-option>
+        <mat-option *ngFor="let s of ships" [value]="s.id">
+          <div class="opt-title">{{ s.name }} · {{ s.booster }}</div>
+          <div class="opt-meta">
+            Fuel: {{ s.fuelType }}
+            • Max: {{ s.maximumCapacity | number }} kg
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="dp" formControlName="flightDate">
+      <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+      <mat-datepicker #dp></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Passengers</mat-label>
-      <input matInput type="number" min="1" formControlName="passengers" />
-      <mat-error *ngIf="form.get('passengers')?.touched && (form.get('passengers')?.hasError('required') || form.get('passengers')?.hasError('min'))">
-        Passengers must be at least 1.
-      </mat-error>
+      <input matInput type="number" min="1" formControlName="passengers">
     </mat-form-field>
 
-    <button mat-raised-button color="accent" type="submit">
-      Search
-    </button>
-    <button mat-stroked-button color="primary" type="button" (click)="clear()">
-      Clear
-    </button>
+    <mat-form-field appearance="fill">
+      <mat-label>Destination</mat-label>
+      <input matInput formControlName="destination" placeholder="e.g. moon">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Place</mat-label>
+      <input matInput formControlName="place" placeholder="e.g. CYCLER">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Room</mat-label>
+      <mat-select formControlName="room">
+        <mat-option *ngFor="let r of rooms" [value]="r">{{ r | titlecase }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Nights</mat-label>
+      <input matInput type="number" min="1" formControlName="nights">
+    </mat-form-field>
+
+    <button mat-raised-button color="accent" class="tall-btn" type="submit">Get quote</button>
+    <button mat-stroked-button color="primary" class="tall-btn" type="button" (click)="clear()">Clear</button>
   </form>
 
   <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
-  <div *ngIf="error" class="error">{{ error }}</div>
+  <div class="error" *ngIf="error">{{ error }}</div>
 
-  <div class="cards" *ngIf="!loading">
-    <mat-card class="pkg" *ngFor="let p of packages" [class.disabled]="!form.valid">
-      <img mat-card-image *ngIf="p.imageUrl" [src]="p.imageUrl" [alt]="p.title" />
-      <mat-card-header>
-        <mat-card-title>{{ p.title }}</mat-card-title>
-        <mat-card-subtitle>{{ p.subtitle }}</mat-card-subtitle>
-      </mat-card-header>
+  <mat-card class="quote" *ngIf="quote && !loading">
+    <mat-card-title>Breakdown</mat-card-title>
+    <mat-card-content>
+      <div class="grid">
+        <div>Spaceship</div><div>{{ quote.spaceshipName }} · {{ quote.booster }}</div>
+        <div>Fuel</div><div>{{ quote.fuelType }}</div>
+        <div>Flight date</div><div>{{ quote.flightDate }}</div>
+        <div>Passengers</div><div>{{ quote.passengers }}</div>
+        <div>Payload</div><div>{{ quote.payloadKg | number:'1.0-0' }} kg</div>
+        <div>Est. fuel</div><div>{{ quote.estFuelKg | number:'1.0-0' }} kg</div>
+        <div>Hotel</div><div>{{ quote.destination }} / {{ quote.place }} / {{ quote.room }}, nights: {{ quote.nights }}, rooms: {{ quote.rooms }}</div>
+      </div>
 
-      <mat-card-content *ngIf="p.basePrice">
-        <p><strong>Base price:</strong> {{ p.basePrice | number:'1.0-0' }}</p>
-      </mat-card-content>
-
-      <mat-card-actions>
-        <button
-          mat-raised-button
-          color="accent"
-          [disabled]="form.invalid"
-          (click)="search()">
-          Check availability
-        </button>
-      </mat-card-actions>
-    </mat-card>
-
-    <div *ngIf="!packages?.length && !loading" class="hint">
-      No packages available.
-    </div>
-  </div>
+      <div class="totals">
+        <div>Fuel cost</div><div>{{ quote.fuelCost.amount | number:'1.2-2' }} {{ quote.fuelCost.currency }}</div>
+        <div>Hotel cost</div><div>{{ quote.hotelCost.amount | number:'1.2-2' }} {{ quote.hotelCost.currency }}</div>
+        <div>Service fee</div><div>{{ quote.serviceFee.amount | number:'1.2-2' }} {{ quote.serviceFee.currency }}</div>
+        <div>Gov tax</div><div>{{ quote.govTax.amount | number:'1.2-2' }} {{ quote.govTax.currency }}</div>
+        <div class="subtotal">Subtotal</div><div class="subtotal">{{ quote.subtotal.amount | number:'1.2-2' }} {{ quote.subtotal.currency }}</div>
+        <div class="total">Total</div><div class="total">{{ quote.total.amount | number:'1.2-2' }} {{ quote.total.currency }}</div>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </section>

@@ -55,3 +55,31 @@
     button { width: 100%; }
   }
 }
+
+.filters {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: end;
+}
+@media (max-width: 900px) { .filters { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .filters { grid-template-columns: 1fr; } }
+
+:host ::ng-deep .ships-panel .mat-mdc-select-panel {
+  min-width: 360px;
+  max-width: min(90vw, 520px);
+}
+:host ::ng-deep .ships-panel .mat-mdc-option {
+  height: auto;
+  line-height: 1.2;
+  padding: 10px 12px;
+}
+:host ::ng-deep .ships-panel .opt-title {
+  font-weight: 700;
+}
+:host ::ng-deep .ships-panel .opt-meta {
+  font-size: 12px;
+  opacity: .8;
+}

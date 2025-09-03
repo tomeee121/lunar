@@ -1,5 +1,5 @@
 <mat-sidenav-container class="app-container">
-  <mat-sidenav #drawer class="sidenav" mode="side" [fixedInViewport]="true">
+  <mat-sidenav #drawer="matSidenav" class="sidenav" mode="side" [fixedInViewport]="true">
     <div class="sidenav-content">
       <!-- main navigation - top items -->
       <mat-nav-list class="nav-top">
@@ -69,16 +69,13 @@
     </div>
   </mat-sidenav>
 
-  <mat-sidenav-content>
+  <mat-sidenav-content cdkScrollable>
     <mat-toolbar class="app-toolbar">
       <button mat-icon-button (click)="drawer.toggle()" aria-label="Toggle menu">
         <mat-icon>menu</mat-icon>
       </button>
       <span class="brand">Lunar Travel 🚀</span>
     </mat-toolbar>
-
-    <main class="main-content">
-      <router-outlet></router-outlet>
-    </main>
+    <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

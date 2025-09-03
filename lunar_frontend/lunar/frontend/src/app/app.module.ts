@@ -2,81 +2,62 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule, Routes } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
-/* Angular Material */
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-
-
-/* Components */
 import { AppComponent } from './app.component';
-import {PackagesComponent} from "./app/features/packages/packages.component";
-import {SpaceshipsComponent} from "./app/features/spaceships/spaceships.component";
+import { AppRoutingModule } from './app-routing.module';
+
+import { PackagesComponent } from './app/features/packages/packages.component';
+import { SpaceshipsComponent } from './app/features/spaceships/spaceships.component';
 import { LoginComponent } from './app/features/auth/login/login.component';
 import { RegisterComponent } from './app/features/auth/register/register.component';
-import { BookingHistoryComponent } from './app/features/bookings/booking-history/booking-history.component';
-import {MatToolbarModule} from "@angular/material/toolbar";
-import {MatSidenavModule} from "@angular/material/sidenav";
-import {MatListModule} from "@angular/material/list";
-import {MatProgressBarModule} from "@angular/material/progress-bar";
-import {HomeComponent} from "./app/features/home/home.component";
 
-const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'spaceships', component: SpaceshipsComponent },
-  { path: 'packages', component: PackagesComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'bookings', component: BookingHistoryComponent },
-  { path: '**', redirectTo: '' }
-];
+// Angular Material
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SpaceshipsComponent,
     PackagesComponent,
+    SpaceshipsComponent,
     LoginComponent,
     RegisterComponent,
-    BookingHistoryComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    FormsModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(routes, {scrollPositionRestoration: 'enabled'}),
+    FormsModule,
 
-    /* Material */
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTableModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatCardModule,
-    MatSnackBarModule,
-    MatToolbarModule,
+    AppRoutingModule,
+
     MatSidenavModule,
     MatListModule,
-    MatProgressBarModule
+    MatIconModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatCardModule,
+    MatProgressBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatTableModule,
   ],
-  providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'pl-PL' },
-  ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}
