@@ -1,88 +1,120 @@
-<section class="packages">
-  <h2>Trip quote</h2>
+<section class="container py-4 packages">
+  <h2 class="text-center mb-4">Trip quote</h2>
 
-  <form class="filters" [formGroup]="form" (ngSubmit)="search()">
-    <mat-form-field appearance="fill">
-      <mat-label>Spaceship</mat-label>
-      <mat-select formControlName="spaceshipId" panelClass="ships-panel">
-        <mat-select-trigger>
-          {{ shipById(form.value.spaceshipId)?.name || '—' }}
-          <ng-container *ngIf="shipById(form.value.spaceshipId)"> · {{ shipById(form.value.spaceshipId)?.booster }}</ng-container>
-        </mat-select-trigger>
+  <!-- ROW 1 -->
+  <form class="row g-3 justify-content-center" [formGroup]="form" (ngSubmit)="search()">
+    <div class="col-12 col-md-6 col-lg-3 col-xxl-20">
+      <label class="form-label">Spaceship</label>
+      <select class="form-select" formControlName="spaceshipId">
+        <option [ngValue]="null">— Any —</option>
+        <option *ngFor="let s of ships" [ngValue]="s.id">
+          {{ s.name }} · {{ s.booster }}
+        </option>
+      </select>
+      <div class="form-text" *ngIf="shipById(form.value.spaceshipId)">
+        Max: {{ shipById(form.value.spaceshipId)?.maximumCapacity | number }} kg •
+        Fuel: {{ shipById(form.value.spaceshipId)?.fuelType }}
+      </div>
+    </div>
 
-        <mat-option [value]="null">— Any —</mat-option>
-        <mat-option *ngFor="let s of ships" [value]="s.id">
-          <div class="opt-title">{{ s.name }} · {{ s.booster }}</div>
-          <div class="opt-meta">
-            Fuel: {{ s.fuelType }}
-            • Max: {{ s.maximumCapacity | number }} kg
-          </div>
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+    <div class="col-6 col-lg-3 col-xxl-20">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-control" formControlName="flightDate">
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Date</mat-label>
-      <input matInput [matDatepicker]="dp" formControlName="flightDate">
-      <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
-      <mat-datepicker #dp></mat-datepicker>
-    </mat-form-field>
+    <div class="col-6 col-lg-3 col-xxl-20">
+      <label class="form-label">Passengers</label>
+      <input type="number" min="1" class="form-control" formControlName="passengers">
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Passengers</mat-label>
-      <input matInput type="number" min="1" formControlName="passengers">
-    </mat-form-field>
+    <div class="col-12 col-md-6 col-lg-3 col-xxl-20">
+      <label class="form-label">Destination</label>
+      <input class="form-control" formControlName="destination" placeholder="moon">
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Destination</mat-label>
-      <input matInput formControlName="destination" placeholder="e.g. moon">
-    </mat-form-field>
+    <!-- ROW 2 -->
+    <div class="col-12 col-md-6 col-lg-3 col-xxl-20">
+      <label class="form-label">Place</label>
+      <input class="form-control" formControlName="place" placeholder="CYCLER">
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Place</mat-label>
-      <input matInput formControlName="place" placeholder="e.g. CYCLER">
-    </mat-form-field>
+    <div class="col-6 col-lg-3 col-xxl-20">
+      <label class="form-label">Room</label>
+      <select class="form-select" formControlName="room">
+        <option *ngFor="let r of rooms" [ngValue]="r">{{ r | titlecase }}</option>
+      </select>
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Room</mat-label>
-      <mat-select formControlName="room">
-        <mat-option *ngFor="let r of rooms" [value]="r">{{ r | titlecase }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+    <div class="col-6 col-lg-3 col-xxl-20">
+      <label class="form-label">Nights</label>
+      <input type="number" min="1" class="form-control" formControlName="nights">
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Nights</mat-label>
-      <input matInput type="number" min="1" formControlName="nights">
-    </mat-form-field>
+    <!--hidden fields for BE BE -->
+    <input type="hidden" formControlName="payloadKg">
+    <input type="hidden" formControlName="rooms">
 
-    <button mat-raised-button color="accent" class="tall-btn" type="submit">Get quote</button>
-    <button mat-stroked-button color="primary" class="tall-btn" type="button" (click)="clear()">Clear</button>
+    <div class="col-12 d-flex gap-2 justify-content-center pt-2">
+      <button class="btn btn-primary px-4" type="submit" [disabled]="loading">Get quote</button>
+      <button class="btn btn-outline-light px-4" type="button" (click)="clear()">Clear</button>
+    </div>
   </form>
 
-  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
-  <div class="error" *ngIf="error">{{ error }}</div>
+  <div class="text-center text-danger mt-2" *ngIf="error">{{ error }}</div>
 
-  <mat-card class="quote" *ngIf="quote && !loading">
-    <mat-card-title>Breakdown</mat-card-title>
-    <mat-card-content>
-      <div class="grid">
-        <div>Spaceship</div><div>{{ quote.spaceshipName }} · {{ quote.booster }}</div>
-        <div>Fuel</div><div>{{ quote.fuelType }}</div>
-        <div>Flight date</div><div>{{ quote.flightDate }}</div>
-        <div>Passengers</div><div>{{ quote.passengers }}</div>
-        <div>Payload</div><div>{{ quote.payloadKg | number:'1.0-0' }} kg</div>
-        <div>Est. fuel</div><div>{{ quote.estFuelKg | number:'1.0-0' }} kg</div>
-        <div>Hotel</div><div>{{ quote.destination }} / {{ quote.place }} / {{ quote.room }}, nights: {{ quote.nights }}, rooms: {{ quote.rooms }}</div>
+  <!-- RESULT: two tables close to each other -->
+  <div class="row g-3 mt-4" *ngIf="quote && !loading">
+    <div class="col-12 col-lg-6">
+      <div class="card glass h-100">
+        <div class="card-body">
+          <h5 class="card-title">Trip details</h5>
+          <table class="table table-dark table-striped table-sm mb-0">
+            <thead>
+            <tr><th scope="col">Field</th><th scope="col">Value</th></tr>
+            </thead>
+            <tbody>
+            <tr><td>Spaceship</td><td>{{ quote.spaceshipName }} · {{ quote.booster }}</td></tr>
+            <tr><td>Fuel</td><td>{{ quote.fuelType }}</td></tr>
+            <tr><td>Flight date</td><td>{{ quote.flightDate }}</td></tr>
+            <tr><td>Passengers</td><td>{{ quote.passengers }}</td></tr>
+            <tr><td>Payload</td><td>{{ quote.payloadKg | number:'1.0-0' }} kg</td></tr>
+            <tr><td>Est. fuel</td><td>{{ quote.estFuelKg | number:'1.0-0' }} kg</td></tr>
+            <tr>
+              <td>Hotel</td>
+              <td>{{ quote.destination }} / {{ quote.place }} / {{ quote.room }},
+                nights: {{ quote.nights }}, rooms: {{ quote.rooms }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+    </div>
 
-      <div class="totals">
-        <div>Fuel cost</div><div>{{ quote.fuelCost.amount | number:'1.2-2' }} {{ quote.fuelCost.currency }}</div>
-        <div>Hotel cost</div><div>{{ quote.hotelCost.amount | number:'1.2-2' }} {{ quote.hotelCost.currency }}</div>
-        <div>Service fee</div><div>{{ quote.serviceFee.amount | number:'1.2-2' }} {{ quote.serviceFee.currency }}</div>
-        <div>Gov tax</div><div>{{ quote.govTax.amount | number:'1.2-2' }} {{ quote.govTax.currency }}</div>
-        <div class="subtotal">Subtotal</div><div class="subtotal">{{ quote.subtotal.amount | number:'1.2-2' }} {{ quote.subtotal.currency }}</div>
-        <div class="total">Total</div><div class="total">{{ quote.total.amount | number:'1.2-2' }} {{ quote.total.currency }}</div>
+    <div class="col-12 col-lg-6">
+      <div class="card glass h-100">
+        <div class="card-body">
+          <h5 class="card-title">Costs</h5>
+          <table class="table table-dark table-striped table-sm mb-0">
+            <thead>
+            <tr><th scope="col">Item</th><th scope="col" class="text-end">Amount</th></tr>
+            </thead>
+            <tbody>
+            <tr><td>Fuel cost</td><td class="text-end">{{ quote.fuelCost.amount | number:'1.2-2' }} {{ quote.fuelCost.currency }}</td></tr>
+            <tr><td>Hotel cost</td><td class="text-end">{{ quote.hotelCost.amount | number:'1.2-2' }} {{ quote.hotelCost.currency }}</td></tr>
+            <tr><td>Service fee</td><td class="text-end">{{ quote.serviceFee.amount | number:'1.2-2' }} {{ quote.serviceFee.currency }}</td></tr>
+            <tr><td>Gov tax</td><td class="text-end">{{ quote.govTax.amount | number:'1.2-2' }} {{ quote.govTax.currency }}</td></tr>
+            <tr class="table-secondary">
+              <th>Subtotal</th>
+              <th class="text-end">{{ quote.subtotal.amount | number:'1.2-2' }} {{ quote.subtotal.currency }}</th>
+            </tr>
+            <tr class="table-primary">
+              <th>Total</th>
+              <th class="text-end">{{ quote.total.amount | number:'1.2-2' }} {{ quote.total.currency }}</th>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 </section>

@@ -1,16 +1,22 @@
 html, body { height: 100%; }
 
+.cdk-overlay-container, .cdk-global-overlay-wrapper {
+  z-index: 10000; /* higher than toolbar/navbar */
+}
+
 body { background: #06141e; }
 
-body::before {
-  content: '';
+.app-main { position: relative; z-index: 0; }
+
+.app-bg::before {
+  content: "";
   position: fixed;
-  inset: 0;
-  z-index: -1;
+  inset: 64px 0 0 0;              /* pod toolbarem */
   background:
     linear-gradient(rgba(6,20,30,.65), rgba(6,20,30,.65)),
-    url('/assets/bg/ship.jpg') center/cover no-repeat fixed;
-  will-change: transform;
+    url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1600') center/cover no-repeat;
+  z-index: -1;                    /* KLUCZ: pod treścią */
+  pointer-events: none;
 }
 
 .mat-drawer-content,
@@ -48,9 +54,4 @@ mat-sidenav-content {
 }
 ::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
   border-color: #1976d2 !important;
-}
-
-.cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
-  background: rgba(0,0,0,.35);
-  backdrop-filter: blur(2px);
 }

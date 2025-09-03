@@ -4,6 +4,7 @@ import { TripQuote } from '../../core/models/trips.model';
 import { TripsService } from '../../core/services/trips.service';
 import { SpaceshipService } from '../../core/services/spaceship.service';
 import { SpaceshipModel } from '../../core/models/spaceship.model';
+import { Overlay } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-packages',
@@ -22,7 +23,8 @@ export class PackagesComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private tripsSvc: TripsService,
-    private shipsSvc: SpaceshipService
+    private shipsSvc: SpaceshipService,
+    public overlay: Overlay
   ) {
     this.form = this.fb.group({
       spaceshipId: [null, Validators.required],

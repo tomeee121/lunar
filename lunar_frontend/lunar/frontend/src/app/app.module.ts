@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Overlay, ScrollStrategy } from '@angular/cdk/overlay';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -22,10 +23,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import {MAT_SELECT_SCROLL_STRATEGY, MatSelectModule} from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTableModule } from '@angular/material/table';
+
+export function matSelectScrollStrategyFactory(overlay: Overlay): () => ScrollStrategy {
+  return () => overlay.scrollStrategies.reposition();
+}
 
 @NgModule({
   declarations: [
@@ -56,7 +61,10 @@ import { MatTableModule } from '@angular/material/table';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatTableModule,
+    MatTableModule
+  ],
+  providers: [
+    { provide: MAT_SELECT_SCROLL_STRATEGY, useFactory: matSelectScrollStrategyFactory, deps: [Overlay] }
   ],
   bootstrap: [AppComponent]
 })

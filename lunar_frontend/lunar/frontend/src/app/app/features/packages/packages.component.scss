@@ -1,4 +1,3 @@
-/* kontener strony */
 .packages {
   max-width: 1000px;
   margin: 32px auto;
@@ -67,19 +66,39 @@
 @media (max-width: 900px) { .filters { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .filters { grid-template-columns: 1fr; } }
 
-:host ::ng-deep .ships-panel .mat-mdc-select-panel {
-  min-width: 360px;
-  max-width: min(90vw, 520px);
+.packages {
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.35);
 }
-:host ::ng-deep .ships-panel .mat-mdc-option {
-  height: auto;
-  line-height: 1.2;
-  padding: 10px 12px;
+
+.glass {
+  background: rgba(0,0,0,.18);
+  backdrop-filter: blur(1.5px) brightness(1.25);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
 }
-:host ::ng-deep .ships-panel .opt-title {
-  font-weight: 700;
+
+.form-text { color: rgba(255,255,255,.8); }
+
+@media (min-width: 1400px) {        /* xxl */
+  .col-xxl-20 {
+    flex: 0 0 20%;
+    max-width: 20%;
+  }
 }
-:host ::ng-deep .ships-panel .opt-meta {
-  font-size: 12px;
-  opacity: .8;
+
+.packages { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+
+.glass {
+  background: rgba(0,0,0,.18);
+  backdrop-filter: blur(1.5px) brightness(1.25);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+}
+
+.form-text { color: rgba(255,255,255,.85); }
+
+
+@media (min-width: 1400px) {
+  .col-xxl-20 { flex: 0 0 20%; max-width: 20%; }
 }
