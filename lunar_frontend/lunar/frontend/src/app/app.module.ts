@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Overlay, ScrollStrategy } from '@angular/cdk/overlay';
 
@@ -12,6 +12,10 @@ import { PackagesComponent } from './app/features/packages/packages.component';
 import { SpaceshipsComponent } from './app/features/spaceships/spaceships.component';
 import { LoginComponent } from './app/features/auth/login/login.component';
 import { RegisterComponent } from './app/features/auth/register/register.component';
+import { HeaderComponent } from './app/shared/header/header.component';
+import { HomeComponent } from './app/features/home/home.component';
+import { BookingHistoryComponent } from './app/features/bookings/booking-history/booking-history.component';
+import { AuthInterceptor } from './app/core/interceptors/auth.interceptor';
 
 // Angular Material
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -39,6 +43,9 @@ export function matSelectScrollStrategyFactory(overlay: Overlay): () => ScrollSt
     SpaceshipsComponent,
     LoginComponent,
     RegisterComponent,
+    HeaderComponent,
+    HomeComponent,
+    BookingHistoryComponent,
   ],
   imports: [
     BrowserModule,
@@ -64,7 +71,8 @@ export function matSelectScrollStrategyFactory(overlay: Overlay): () => ScrollSt
     MatTableModule
   ],
   providers: [
-    { provide: MAT_SELECT_SCROLL_STRATEGY, useFactory: matSelectScrollStrategyFactory, deps: [Overlay] }
+    { provide: MAT_SELECT_SCROLL_STRATEGY, useFactory: matSelectScrollStrategyFactory, deps: [Overlay] },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

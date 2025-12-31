@@ -2,17 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-
-export interface Availability {
-  spaceshipId: number;
-  spaceshipName: string;
-  packageCode: string;
-  passengers: number;
-  flightCost: number;
-  hotelCost: number;
-  total: number;
-  perPassenger: number;
-}
+import { Availability } from '../models/availability.model';
 
 @Injectable({ providedIn: 'root' })
 export class AvailabilityService {
@@ -20,8 +10,8 @@ export class AvailabilityService {
 
   check(destination: string, date: string, passengers: number, pkg: string, rooms?: string)
     : Observable<Availability[]> {
-    const params: any = { date, passengers, pkg };
-    if (rooms) params.rooms = rooms;
+    const params: Record<string, string | number> = { date, passengers, pkg };
+    if (rooms) params['rooms'] = rooms;
     return this.api.get<Availability[]>(`/api/${destination}/availability`, params);
   }
 }

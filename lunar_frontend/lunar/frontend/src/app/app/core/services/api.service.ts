@@ -9,7 +9,7 @@ export class ApiService {
   private base = environment.apiBaseUrl;
   constructor(private http: HttpClient) {}
 
-  get<T>(url: string, params?: any): Observable<T> {
+  get<T>(url: string, params?: Record<string, string | number | boolean>): Observable<T> {
     return this.http.get<T>(`${this.base}${url}`, { params }).pipe(
       catchError(this.handleError)
     );
